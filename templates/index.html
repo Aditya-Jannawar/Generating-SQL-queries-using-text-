@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>DB Query Generator</title>
+    <style>
+        /* Basic layout styling */
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            margin: 0;
+            padding: 0;
+            justify-content: center;
+        }
+        .container {
+            display: flex;
+            max-width: 1200px;
+            margin-top: 20px;
+        }
+        .main-section, .actions-section {
+            padding: 20px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            background-color: #f9f9f9;
+        }
+        .main-section {
+            width: 70%;
+            margin-right: 20px;
+        }
+        .actions-section {
+            width: 30%;
+        }
+        pre {
+            background-color: #f3f3f3;
+            padding: 10px;
+            border-radius: 5px;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+        h2 {
+            margin-top: 0;
+        }
+        button {
+            padding: 5px 10px;
+            margin-top: 10px;
+        }
+        ul {
+            list-style-type: none;
+            padding: 0;
+        }
+        li {
+            padding: 8px;
+            cursor: pointer;
+            background-color: #e7e7e7;
+            border-radius: 4px;
+            margin-bottom: 5px;
+        }
+        li:hover {
+            background-color: #d4d4d4;
+        }
+    </style>
+    <script>
+        async function fetchSchema() {
+            const response = await fetch('/fetch_schema');
+            const schema = await response.json();
+            document.getElementById('schema').innerText = JSON.stringify(schema, null, 2);
+        }
+
+        async function generateQuery(action) {
+            const response = await fetch('/generate_query', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ action })
+            });
+            const result = await response.json();
+            document.getElementById('query').innerText = result.query;
+        }
+
+        function selectAction(actionText) {
+            document.getElementById('action-input').value = actionText;
+            generateQuery(actionText);
+        }
+    </script>
+</head>
+<body onload="fetchSchema()">
+    <div class="container">
+        <!-- Main Section -->
+        <div class="main-section">
+            <h1>Database Query Generator</h1>
+            <h2>Schema</h2>
+            <pre id="schema">Loading schema...</pre>
+            
+            <h2>Enter Action</h2>
+            <input type="text" id="action-input" placeholder="e.g., display usernames with document_ids">
+            <button onclick="generateQuery(document.getElementById('action-input').value)">Generate Query</button>
+
+            <h2>Generated SQL Query</h2>
+            <pre id="query">SQL query will appear here</pre>
+        </div>
+
+        <!-- Actions Section -->
+        <div class="actions-section">
+            <h2>Suggested Actions</h2>
+            <ul>
+                <li onclick="selectAction('display usernames with document_ids')">Display usernames with document IDs</li>
+                <li onclick="selectAction('display all documents with their titles and user names')">Display all documents with titles and user names</li>
+                <li onclick="selectAction('count the number of documents for each user')">Count the number of documents per user</li>
+                <li onclick="selectAction('display documents created by a specific user')">Display documents by a specific user</li>
+                <li onclick="selectAction('find users who have more than one document')">Find users with more than one document</li>
+                <li onclick="selectAction('list all document titles containing a specific keyword')">List document titles with specific keyword</li>
+                <li onclick="selectAction('get the most recent document for each user')">Get most recent document per user</li>
+                <li onclick="selectAction('display usernames in alphabetical order')">Display usernames alphabetically</li>
+                <li onclick="selectAction('find the total number of users')">Find total number of users</li>
+                <li onclick="selectAction('display all users without any documents')">Display users without documents</li>
+                <li onclick="selectAction('list document titles created after a specific date')">List document titles after a date</li>
+                <li onclick="selectAction('find users who have documents with a title length greater than 10 characters')">Users with titles longer than 10 chars</li>
+                <li onclick="selectAction('get the average number of documents per user')">Average documents per user</li>
+                <li onclick="selectAction('display document titles and user names for documents with document_id greater than 5')">Documents with ID > 5 and user names</li>
+                <li onclick="selectAction('find documents for users whose names start with A')">Documents by users starting with "A"</li>
+            </ul>
+        </div>
+    </div>
+</body>
+</html>
